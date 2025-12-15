@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stash Labs - Infrastructure for RGB Protocol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-card: rgba(20, 20, 20, 0.9);
+            --color-primary: #00ffff;
+            --color-secondary: #8b5cf6;
+            --color-accent: #00ff88;
+            --color-text: #e2e8f0;
+            --color-text-secondary: #a0a0a0;
+            --border-color: rgba(0, 255, 255, 0.2);
+            --glow-cyan: rgba(0, 255, 255, 0.5);
+            --glow-purple: rgba(139, 92, 246, 0.5);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #000000;
+            color: var(--color-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 100px 100px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        /* Animated Grid Lines */
+        @keyframes gridMove {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(100px, 100px);
+            }
+        }
+
+        /* Hexagon Pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 255, 0.03) 2px,
+                    rgba(0, 255, 255, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    60deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 92, 246, 0.03) 2px,
+                    rgba(139, 92, 246, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    120deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 136, 0.03) 2px,
+                    rgba(0, 255, 136, 0.03) 4px
+                );
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        /* Scanlines Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                transparent 50%,
+                rgba(0, 255, 255, 0.03) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9999;
+            animation: scanlinesMove 8s linear infinite;
+        }
+
+        @keyframes scanlinesMove {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(4px);
+            }
+        }
+
+        /* Animated Particles Container */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--glow-cyan);
+            animation: particleFloat 15s infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            50% {
+                transform: translate(var(--tx), var(--ty)) scale(1.5);
+            }
+        }
+
+        /* Animated Light Beams */
+        .light-beams {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .beam {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent,
+                var(--color-primary),
+                transparent
+            );
+            opacity: 0.2;
+            animation: beamMove 10s linear infinite;
+        }
+
+        .beam:nth-child(1) {
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .beam:nth-child(2) {
+            left: 50%;
+            animation-delay: 3s;
+            background: linear-gradient(
+                to bottom,
+                transparent,
+                var(--color-secondary),
+                transparent
+            );
+        }
+
+        .beam:nth-child(3) {
+            left: 80%;
+            animation-delay: 6s;
+            background: linear-gradient(
+                to bottom,
+                transparent,
+                var(--color-accent),
+                transparent
+            );
+        }
+
+        @keyframes beamMove {
+            0% {
+                transform: translateX(0) scaleX(1);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.3;
+                transform: translateX(50px) scaleX(2);
+            }
+            100% {
+                transform: translateX(100px) scaleX(1);
+                opacity: 0;
+            }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 255, 255, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--color-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: var(--color-primary);
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent));
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after,
+        .nav-menu a.active::after {
+            width: 100%;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--color-text);
+            transition: all 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 2rem 2rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-accent) 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
+            animation: fadeInUp 1s ease, heroGlow 3s ease infinite;
+        }
+
+        @keyframes heroGlow {
+            0%, 100% {
+                background-position: 0% 50%;
+                filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.8));
+            }
+            50% {
+                background-position: 100% 50%;
+                filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8));
+            }
+        }
+
+        .hero .slogan {
+            font-size: 1.5rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero .description {
+            font-size: 1.1rem;
+            color: var(--color-text);
+            max-width: 700px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease 0.4s both;
+            line-height: 1.8;
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 100px 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-accent) 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            animation: titleGlow 3s ease infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% {
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
+            50% {
+                background-position: 100% 50%;
+                filter: brightness(1.2);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow:
+                0 0 20px rgba(0, 255, 255, 0.1),
+                inset 0 0 20px rgba(0, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(90deg,
+                var(--color-primary),
+                var(--color-secondary),
+                var(--color-accent),
+                var(--color-primary));
+            background-size: 300% 300%;
+            border-radius: 8px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-primary);
+            box-shadow:
+                0 0 40px rgba(0, 255, 255, 0.3),
+                0 0 80px rgba(139, 92, 246, 0.2),
+                inset 0 0 30px rgba(0, 255, 255, 0.1);
+        }
+
+        .card:hover::before {
+            opacity: 0.3;
+            animation: borderGlow 3s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        .card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--color-primary);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .card p {
+            color: var(--color-text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card ul li {
+            color: var(--color-text-secondary);
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .card ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--color-primary);
+        }
+
+        /* Sub-section styles for What is Stash */
+        .sub-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sub-section:first-of-type {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .sub-section h4 {
+            color: var(--color-primary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .sub-section p {
+            color: var(--color-text-secondary);
+            line-height: 1.9;
+            margin-bottom: 0;
+        }
+
+        /* Project Grid */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 0 20px rgba(0, 255, 255, 0.1),
+                inset 0 0 20px rgba(0, 255, 255, 0.05);
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg,
+                var(--color-primary),
+                var(--color-secondary),
+                var(--color-accent));
+            border-radius: 8px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.4s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-primary);
+            box-shadow:
+                0 0 40px rgba(0, 255, 255, 0.3),
+                0 0 80px rgba(139, 92, 246, 0.2),
+                inset 0 0 30px rgba(0, 255, 255, 0.1);
+        }
+
+        .project-card:hover::before {
+            opacity: 0.3;
+        }
+
+        .project-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--color-primary);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .project-card .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .status.live {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status.planned {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        /* Roadmap */
+        .roadmap {
+            position: relative;
+            padding: 3rem 0;
+        }
+
+        .roadmap-item {
+            position: relative;
+            padding-left: 3rem;
+            padding-bottom: 3rem;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .roadmap-item:last-child {
+            border-left: none;
+        }
+
+        .roadmap-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 0;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+
+        .roadmap-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--color-primary);
+        }
+
+        .roadmap-item .timeline {
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .roadmap-item p {
+            color: var(--color-text-secondary);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(45, 27, 78, 0.6);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-top: 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .roadmap-item.highlight {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-left: -1.5rem;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease both;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                flex-direction: column;
+                background: rgba(45, 27, 78, 0.95);
+                backdrop-filter: blur(20px);
+                width: 100%;
+                padding: 2rem;
+                transition: left 0.3s;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .slogan {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 60px 1rem;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .roadmap-item {
+                padding-left: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero .slogan {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sci-fi Effects -->
+    <div class="scanlines"></div>
+    <div class="light-beams">
+        <div class="beam"></div>
+        <div class="beam"></div>
+        <div class="beam"></div>
+    </div>
+    <div id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">Stash Labs</div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#what-is-stash">What is Stash</a></li>
+                <li><a href="#vision">Vision</a></li>
+                <li><a href="#security">Security</a></li>
+                <li><a href="#solution">Solution</a></li>
+                <li><a href="#revenue">Revenue</a></li>
+                <li><a href="#roadmap">Roadmap</a></li>
+            </ul>
+            <div class="mobile-menu-toggle" id="mobileMenuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Stash Labs</h1>
+            <p class="slogan">Infrastructure for RGB Protocol</p>
+            <p class="description">
+                Stash Labs is an infrastructure service provider for the RGB protocol, focusing on building RGBSFUN DEX and RGBSTASH, a decentralized privacy storage network.
+            </p>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section">
+        <h2 class="section-title">Our Projects</h2>
+        <div class="project-grid">
+            <div class="project-card">
+                <span class="status live">Live</span>
+                <h3>RGBS.FUN DEX</h3>
+                <p>An all-in-one DEX platform for RGB protocol, providing asset issuance, liquidity provision, and trading services.</p>
+            </div>
+            <div class="project-card">
+                <span class="status planned">Planned</span>
+                <h3>RGB Transaction Explorer</h3>
+                <p>Import wallet stash to view transaction history, automatically generate bill analysis, data reports, and other visualization services.</p>
+            </div>
+            <div class="project-card">
+                <span class="status planned">Planned</span>
+                <h3>Decentralized RGB Privacy Data Storage Network</h3>
+                <p>Stash data backup and decentralized storage services for enhanced security and reliability.</p>
+            </div>
+            <div class="project-card">
+                <span class="status planned">Planned</span>
+                <h3>RGB Privacy Data Hosting and Sharing Platform</h3>
+                <p>Stash privacy data signature sharing, allowing authorized signature-based access for designated service providers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is Stash Section -->
+    <section id="what-is-stash" class="section">
+        <h2 class="section-title">What is Stash</h2>
+        <p class="section-subtitle">Understanding the importance of Stash and the risks of data loss</p>
+
+        <div class="card">
+            <h3>Data Loss and Asset Freezing</h3>
+
+            <div class="sub-section">
+                <h4>Asset Records Cannot Be Recovered</h4>
+                <p>
+                    Stash stores all transaction records and state information related to a user's RGB assets. Once lost, users will be unable to prove which assets they once owned and the asset transfer process. For example, after Alice receives RGB assets transferred from Bob, the related data is stored in Alice's Stash. If the Stash is lost, Alice cannot prove to others that she received these assets.
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <h4>Assets May Be Permanently Frozen</h4>
+                <p>
+                    Due to the non-global broadcast nature of the RGB protocol, asset status and transfers are only recorded in the local Stash of the trading parties. If the recipient's Stash is lost and there is no backup, these assets may become unusable or untransferable, effectively being permanently frozen, making transaction verification difficult.
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <h4>Unable to Verify Transaction Validity</h4>
+                <p>
+                    In the RGB protocol, verifying whether a transaction is valid requires viewing the historical transfer records of the assets corresponding to that transaction. If the Stash is lost, users will be unable to provide complete transaction history data to prove the legitimacy of current transactions. For example, when Bob wants to transfer RGB assets to Alice, he needs to select all historical transfer records related to the asset from the local Stash, together with the newly generated transfer record, and submit them to Alice for verification. If the Stash is lost, Bob cannot provide this data, and Alice cannot verify the transaction's validity.
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <h4>Impact on Network Transaction Trust</h4>
+                <p>
+                    Due to the inability to verify transaction validity, the transaction trust mechanism of the entire RGB network will be impacted. Other users may become concerned about increased transaction risks due to counterparty Stash data loss, which negatively affects the trading activity of the entire network.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Network Isolation Effect Intensified</h3>
+
+            <div class="sub-section">
+                <h4>Data Isolation Problem Highlighted</h4>
+                <p>
+                    The RGB protocol inherently has a data isolation problem, where data between different clients cannot be effectively synchronized and shared. When Stash is lost, this isolation effect is further intensified, as users who have lost data will be unable to effectively interact with other users in the network for data exchange and asset transfers.
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <h4>Network Integrity Compromised</h4>
+                <p>
+                    The intensification of the data isolation effect will compromise the integrity of the RGB network, making asset transfers and transaction coordination between users more difficult. This not only affects user experience but also limits the scale expansion and ecosystem development of the RGB network.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section id="vision" class="section">
+        <h2 class="section-title">Our Vision</h2>
+        <div class="card">
+            <h3>Decentralized Stash Hosting Network</h3>
+            <p>We are building a decentralized Stash hosting network for the RGB protocol to address critical issues in the current ecosystem.</p>
+            <p><strong>Why we need a Stash hosting network:</strong></p>
+            <ul>
+                <li>Currently, assets issued by various projects are hosted on their own servers. Even if some projects realize the need for distributed storage, the risks remain significant.</li>
+                <li>On-chain transparency and multi-party cross-verification. Transparency does not mean insecurity. Users can sign authorizations and then publicly share stash with authorized individuals/projects to view transaction history.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>Extended Asset Transaction Records</h3>
+            <p>Asset transaction records are no longer limited to the trading parties. You can share Stash with third-party service providers, such as for generating monthly payment statements or on-chain transaction explorers, to obtain a better trading experience.</p>
+        </div>
+        <div class="card">
+            <h3>Multi-Party Data Recording and Traceability</h3>
+            <p>RWA (Real World Assets), invoices, financial reports, certificates, and other data recording and traceability will require multi-party participation for reconciliation, which will greatly enhance data transparency and credibility.</p>
+        </div>
+    </section>
+
+    <!-- Security Section -->
+    <section id="security" class="section">
+        <h2 class="section-title">Privacy, Security & Reliability</h2>
+        <div class="card">
+            <h3>Enhanced Security and Reliability</h3>
+            <p>With the introduction of a decentralized Stash hosting network, you no longer need to worry about local wallet crashes or issuers losing your assets. This provides a more solid guarantee for the secure storage and management of assets.</p>
+            <ul>
+                <li><strong>Decentralized Storage:</strong> Assets are stored across multiple nodes, eliminating single points of failure.</li>
+                <li><strong>Privacy Protection:</strong> User signature authorization ensures that only authorized parties can access transaction history.</li>
+                <li><strong>Data Integrity:</strong> Multi-party cross-verification ensures the authenticity and reliability of transaction records.</li>
+                <li><strong>Backup & Recovery:</strong> Automatic backup mechanisms prevent data loss even in extreme scenarios.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section id="solution" class="section">
+        <h2 class="section-title">Technical Solution</h2>
+        <div class="card">
+            <h3>Stash Hosting Architecture</h3>
+            <p>Our technical solution provides a comprehensive infrastructure for RGB protocol asset management:</p>
+            <ul>
+                <li><strong>Decentralized Storage Network:</strong> Integration with AR (Arweave) and IPFS for distributed storage of Stash data.</li>
+                <li><strong>Wallet Integration:</strong> Support for multiple wallet providers with easy SDK integration.</li>
+                <li><strong>Infrastructure Services:</strong> Comprehensive SDK and API services for developers to build on top of RGB protocol.</li>
+                <li><strong>Transaction Explorer:</strong> Built-in RGB transaction browser for viewing and analyzing transaction history.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>Future: Self-Built Storage Network</h3>
+            <p>Our long-term vision includes building our own storage network to achieve fully autonomous decentralized Stash hosting, providing a unified privacy data sharing platform.</p>
+        </div>
+    </section>
+
+    <!-- Revenue Section -->
+    <section id="revenue" class="section">
+        <h2 class="section-title">Revenue Sources</h2>
+        <div class="project-grid">
+            <div class="project-card">
+                <h3>RGBS.FUN DEX Trading Fees</h3>
+                <p>Our primary revenue stream comes from transaction fees on the RGBS.FUN DEX platform. We charge a fee based on a percentage of each transaction volume, ensuring sustainable operation while maintaining competitive rates for users.</p>
+            </div>
+            <div class="project-card">
+                <h3>RGB Transaction Explorer API</h3>
+                <p>The RGB Transaction Explorer provides public API access for developers and service providers. We operate on a pay-per-use model, charging based on the number of API calls made, allowing flexible and scalable access to transaction data and analytics.</p>
+            </div>
+            <div class="project-card">
+                <h3>Stash Storage Hosting</h3>
+                <p>Users can opt for our decentralized Stash storage and hosting services for enhanced security and reliability. We charge based on individual wallet addresses, providing transparent and predictable pricing for asset storage and management.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="section">
+        <h2 class="section-title">Roadmap</h2>
+        <div class="roadmap">
+            <div class="roadmap-item highlight">
+                <div class="timeline">Q1 2026</div>
+                <h3>RGBS FUN DEX Launch</h3>
+                <p>Official launch of RGBS FUN DEX, providing comprehensive asset issuance, liquidity provision, and trading services for the RGB protocol ecosystem.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Phase 1: Technical Whitepaper</h3>
+                <p>Release comprehensive technical whitepaper detailing the architecture, protocols, and implementation of the decentralized Stash hosting network.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Phase 2: Decentralized Storage Integration</h3>
+                <p>Implement Stash hosting on decentralized storage networks (AR, IPFS), integrate with more wallet providers, provide SDK and infrastructure services, and launch RGB transaction explorer.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Phase 3: Self-Built Storage Network</h3>
+                <p>Build our own storage network to achieve fully autonomous decentralized Stash hosting and launch a unified privacy data sharing platform.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>@2026 Satsh Labs</p>
+        </div>
+    </footer>
+
+    <script>
+        // Particle System
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                // Random starting position
+                const startX = Math.random() * 100;
+                const startY = Math.random() * 100;
+                particle.style.left = startX + '%';
+                particle.style.top = startY + '%';
+
+                // Random movement
+                const tx = (Math.random() - 0.5) * 200;
+                const ty = (Math.random() - 0.5) * 200;
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+
+                // Random delay
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize particles on load
+        createParticles();
+
+        // Navigation scroll effect
+        const navbar = document.getElementById('navbar');
+        const navLinks = document.querySelectorAll('.nav-menu a');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            // Update active nav link based on scroll position
+            const sections = document.querySelectorAll('.section, .hero');
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scroll for navigation links
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+                // Close mobile menu if open
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Mobile menu toggle
+        mobileMenuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!navbar.contains(e.target) && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.card, .project-card, .roadmap-item').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
