@@ -671,7 +671,6 @@
             backdrop-filter: blur(20px);
             border-top: 1px solid var(--border-color);
             padding: 2rem;
-            text-align: center;
             color: var(--color-text-secondary);
             font-size: 0.9rem;
             margin-top: 4rem;
@@ -682,6 +681,26 @@
         .footer-content {
             max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            margin-left: auto;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .footer-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-accent);
+            text-shadow: 0 0 10px var(--glow-cyan);
         }
 
         .roadmap-item.highlight {
@@ -890,6 +909,13 @@
                     The intensification of the data isolation effect will compromise the integrity of the RGB network, making asset transfers and transaction coordination between users more difficult. This not only affects user experience but also limits the scale expansion and ecosystem development of the RGB network.
                 </p>
             </div>
+
+            <div class="sub-section">
+                <h4>Asset Data Isolation and Silos</h4>
+                <p>
+                    Assets issued by issuer A cannot be used by project B, unless both parties share a centralized server. Even if issuer A allows manual export of Stash, project B still faces the risk of permanent asset loss due to Stash data inconsistency. This is currently the biggest limitation hindering RGB development. The isolated nature of asset data creates silos where different projects cannot interoperate effectively, severely limiting the composability and ecosystem growth of the RGB protocol.
+                </p>
+            </div>
         </div>
     </section>
 
@@ -996,6 +1022,12 @@
     <footer class="footer">
         <div class="footer-content">
             <p>@2026 Satsh Labs</p>
+            <p class="footer-links">
+                Friend links:
+                <a href="https://bitlightlabs.com" target="_blank" rel="noopener noreferrer">bitlightlabs.com</a>
+                ·
+                <a href="https://rgbs.fun" target="_blank" rel="noopener noreferrer">rgbs.fun</a>
+            </p>
         </div>
     </footer>
 
