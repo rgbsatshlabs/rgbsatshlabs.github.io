@@ -510,7 +510,7 @@
             color: var(--color-primary);
         }
 
-        /* Sub-section styles for What is Stash */
+        /* Sub-section styles for  Stock */
         .sub-section {
             margin-top: 2rem;
             padding-top: 2rem;
@@ -534,6 +534,18 @@
             color: var(--color-text-secondary);
             line-height: 1.9;
             margin-bottom: 0;
+        }
+
+        .sub-section a {
+            color: var(--color-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .sub-section a:hover {
+            color: var(--color-accent);
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.8);
         }
 
         /* Project Grid */
@@ -803,12 +815,13 @@
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#home" class="active">Home</a></li>
                 <li><a href="#projects">Projects</a></li>
-                <li><a href="#what-is-stash">What is Stash</a></li>
+                <li><a href="#what-is-stock">Stock</a></li>
                 <li><a href="#vision">Vision</a></li>
                 <li><a href="#security">Security</a></li>
                 <li><a href="#solution">Solution</a></li>
                 <li><a href="#revenue">Revenue</a></li>
                 <li><a href="#roadmap">Roadmap</a></li>
+                <li><a href="#acknowledgments">Acknowledgments</a></li>
             </ul>
             <div class="mobile-menu-toggle" id="mobileMenuToggle">
                 <span></span>
@@ -856,10 +869,57 @@
         </div>
     </section>
 
-    <!-- What is Stash Section -->
-    <section id="what-is-stash" class="section">
-        <h2 class="section-title">What is Stash</h2>
-        <p class="section-subtitle">Understanding the importance of Stash and the risks of data loss</p>
+    <!-- What is Stock Section -->
+    <section id="what-is-stock" class="section">
+        <h2 class="section-title">What is Stock</h2>
+        <p class="section-subtitle">Understanding RGB Stock architecture and the importance of data preservation</p>
+
+        <div class="card">
+            <h3>RGB Stock Architecture</h3>
+            <p>
+                In the RGB protocol, users locally maintain a storage structure called <strong>stash</strong> to store all validated RGB contracts, asset history, and current owned states. Stock is the core data container of RGB, similar to a local "database" or "warehouse". It contains all client-side data needed for validating and operating RGB assets (including genesis, state transitions, consignments, etc.).
+            </p>
+            <p>
+                According to RGB technical documentation and implementations (such as the RGB Core library), <strong>Stock</strong> consists of three key components:
+            </p>
+
+            <div class="sub-section">
+                <h4>Index</h4>
+                <p>
+                    Used for fast querying and organizing data in the stock, including contract IDs, asset labels, UTXO mappings, state allocations, and other index structures. Helps efficiently retrieve the state, history, or owned rights of specific contracts. For example, the index may include mappings from outpoint (Bitcoin UTXO's txid + vout) to RGB states, facilitating verification and transfers.
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <h4>State</h4>
+                <p>
+                    Current valid contract states, including owned asset quantities, rights (owned rights, such as ownership, issuance rights, burn rights), metadata, etc. States evolve through state transitions and are bound to Bitcoin UTXOs (as single-use-seals). The stock stores all validated current states and partial historical states, used to prove ownership and prevent double-spending.
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <h4>Stash</h4>
+                <p>
+                    The overall structure containing complete client-side validation data:
+                </p>
+                <ul>
+                    <li><strong>Genesis:</strong> The starting point of the contract.</li>
+                    <li><strong>State transitions history:</strong> Partial or complete, as needed.</li>
+                    <li><strong>Consignments:</strong> Historical proofs used for contract issuance or state transfers.</li>
+                    <li><strong>Anchors and commitments:</strong> Links to on-chain Bitcoin commitments.</li>
+                </ul>
+                <p>
+                    Stash is private and shard-based (each contract is independent). Losing stash is equivalent to losing assets (backup is required).
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <h4>Client-Side Validation Paradigm</h4>
+                <p>
+                    These components together ensure RGB's client-side validation paradigm: all validation occurs locally in the stock, with only minimal commitments embedded in Bitcoin transactions. This approach enables privacy, scalability, and efficient asset management while maintaining the security guarantees of the Bitcoin blockchain.
+                </p>
+            </div>
+        </div>
 
         <div class="card">
             <h3>Data Loss and Asset Freezing</h3>
@@ -924,11 +984,17 @@
         <h2 class="section-title">Our Vision</h2>
         <div class="card">
             <h3>Decentralized Stash Hosting Network</h3>
-            <p>We are building a decentralized Stash hosting network for the RGB protocol to address critical issues in the current ecosystem.</p>
+            <p>We are building a decentralized privacy network for Stash hosting in the RGB protocol to address critical issues in the current ecosystem while <strong>strongly protecting user privacy</strong>.</p>
+            <p><strong>Privacy-First Architecture:</strong></p>
+            <ul>
+                <li><strong>User Privacy Protection:</strong> Our network is designed with privacy as a core principle. All user data is encrypted and access-controlled. Users maintain full control over their data through cryptographic signatures and authorization mechanisms.</li>
+                <li><strong>Selective Data Sharing:</strong> Users can choose exactly what data to share and with whom. Only authorized parties with proper cryptographic signatures can access specific transaction history, ensuring complete privacy for unauthorized parties.</li>
+                <li><strong>No Unauthorized Access:</strong> The decentralized nature of our network means there is no central authority that can access user data without explicit user authorization. Privacy is built into the protocol itself.</li>
+            </ul>
             <p><strong>Why we need a Stash hosting network:</strong></p>
             <ul>
                 <li>Currently, assets issued by various projects are hosted on their own servers. Even if some projects realize the need for distributed storage, the risks remain significant.</li>
-                <li>On-chain transparency and multi-party cross-verification. Transparency does not mean insecurity. Users can sign authorizations and then publicly share stash with authorized individuals/projects to view transaction history.</li>
+                <li>On-chain transparency and multi-party cross-verification. Transparency does not mean insecurity. Users can sign authorizations and then publicly share stash with authorized individuals/projects to view transaction history, while maintaining complete privacy from unauthorized parties.</li>
             </ul>
         </div>
         <div class="card">
@@ -991,6 +1057,14 @@
                 <h3>Stash Storage Hosting</h3>
                 <p>Users can opt for our decentralized Stash storage and hosting services for enhanced security and reliability. We charge based on individual wallet addresses, providing transparent and predictable pricing for asset storage and management.</p>
             </div>
+            <div class="project-card">
+                <h3>Service Provider Integration Incentives</h3>
+                <p>Service providers that integrate with the Stash network will receive incentives for connecting their services to our decentralized infrastructure. This incentive program encourages ecosystem growth and adoption, rewarding providers who contribute to the network's expansion and functionality.</p>
+            </div>
+            <div class="project-card">
+                <h3>Node Hosting Incentives</h3>
+                <p>Node operators who store user stash data on the decentralized network will receive incentives for providing storage and hosting services. This reward mechanism ensures reliable data storage and encourages network participants to maintain high-quality infrastructure for user stash data preservation.</p>
+            </div>
         </div>
     </section>
 
@@ -1014,6 +1088,36 @@
             <div class="roadmap-item">
                 <h3>Phase 3: Self-Built Storage Network</h3>
                 <p>Build our own storage network to achieve fully autonomous decentralized Stash hosting and launch a unified privacy data sharing platform.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Acknowledgments Section -->
+    <section id="acknowledgments" class="section">
+        <h2 class="section-title">Acknowledgments</h2>
+        <div class="card">
+            <h3>Our Gratitude</h3>
+            <p>We are proud to have these outstanding partners and contributors in the RGB ecosystem.</p>
+
+            <div class="sub-section">
+                <h4>Maxim Orlovsky</h4>
+                <p>
+                    First, we would like to express our gratitude to <strong>Maxim Orlovsky</strong>, who in 2023 proposed the decentralized privacy network layer for RGB, called "<a href="https://www.youtube.com/watch?v=jI4QprrHC3w" target="_blank" rel="noopener noreferrer">Storm</a>", which laid the theoretical foundation for RGB's privacy storage. This groundbreaking work has been instrumental in shaping the future of decentralized privacy networks.
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <h4>Bitlight Team</h4>
+                <p>
+                    We would also like to thank the <strong>Bitlight team</strong>, an outstanding RGB protocol research and development team. They have provided an excellent <a href="https://bitlightlabs.com/" target="_blank" rel="noopener noreferrer">Bitlight wallet</a> and the necessary infrastructure for RGBSFUN DEX. Their contributions to the RGB ecosystem have been invaluable, and we are proud to have such exceptional partners.
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <h4>Other Contributors</h4>
+                <p>
+                    Finally, we would like to express our gratitude to all contributors to the RGB protocol, including but not limited to protocol design, development, testing, operations, promotion, idea contributions, and people from any nationality and any region. Because of your foundation, we can continue to move forward on the shoulders of giants. Thank you for everyone's contributions.
+                </p>
             </div>
         </div>
     </section>
